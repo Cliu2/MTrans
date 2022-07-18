@@ -1,0 +1,87 @@
+---
+data_root: './data/kitti_detect'
+experiment_name: 'test'
+init_checkpoint: null 
+random_seed: 7489
+DEBUG: false
+gen_label: false
+label_dir: pseudo_label
+dataset: KITTI     
+
+TRAIN_CONFIG:
+  optimizer: Adam
+  lr: 1.0e-4
+  epochs: 300
+  output_root: './output'
+  warmup_rate: 0.01
+  epoches_per_eval: 1000
+  eval_begin: 0
+
+DATASET_CONFIG:
+  TRAIN_SET:
+    split: 'train'
+    classes: ['Car']
+    min_points: 0
+    out_img_size: 112
+    out_cloud_size: 512
+    partial_frames: 10
+    load_calib: true
+    mask_ratio: [0.25, 0.95]
+    box2d_augmentation: true
+
+  VAL_SET:
+    split: 'train'
+    classes: ['Car']
+    min_points: 0
+    out_img_size: 112
+    out_cloud_size: 512
+    load_calib: true
+    mask_ratio: [0.0, 0.0]
+    test_rgb_file: rgb_detection_test.txt
+
+DATALOADER_CONFIG:
+  TRAIN_LOADER:
+    batch_size: 1
+    unsupervise_batch_size: 4
+    num_workers: 0
+    pin_memory: true
+    shuffle: true
+    random_seed: 5421
+    drop_last: false
+
+  VAL_LOADER:
+    batch_size: 1
+    num_workers: 0
+    pin_memory: true
+    shuffle: false
+    random_seed: 5421
+    drop_last: false
+
+MODEL_CONFIG:
+  mask_and_jitter: true
+  sparse_query_rate: 4
+  box_drop: 0.0
+  visualize_attn: true
+
+  POINTNET:
+    global_feat: true
+    feature_transform: true
+
+  PSPNET:
+    backbone: 'resnet18'
+    psp_channels: 64
+    bins: [1, 2, 3, 6]
+
+  POINT_ATTENTION:
+    use_cls_token: true
+    num_layers: 4
+    fore_attn: false
+    pos_embedding: 'SIN'  # [MLP, SIN, NO]
+    fuse_method: 'CAT'    # [ADD, CAT, GATING]
+    input_img_channel: 512
+    input_pts_channel: 512
+    position_embedding_channel: 512
+    hidden_size: 768
+    num_heads: 12
+    dropout_rate: 0.2
+    intermediate_size: 1024
