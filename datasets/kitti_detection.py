@@ -8,7 +8,7 @@ Each returned item will be an object with the features:
     5. foreground segmentation labels
 """
 
-from utils.point_ops import check_points_in_box, build_image_location_map
+from utils.point_ops import check_points_in_box, build_image_location_map_single
 from utils.calibrator import KittiCalibrator_detect
 from utils.os_utils import verify_and_create_outdir
 from torch.utils.data import Dataset
@@ -62,7 +62,7 @@ class KittiDetectionDataset(Dataset):
         # build guassian distribution for random sampling
         self.gaussian = torch.ones(cfg.out_img_size, cfg.out_img_size)
         self.gaussian = self.gaussian / self.gaussian.sum()
-        self.img_coords = build_image_location_map(cfg.out_img_size, cfg.out_img_size, 'cpu')
+        self.img_coords = build_image_location_map_single(cfg.out_img_size, cfg.out_img_size, 'cpu')
         
     def __len__(self):
         return len(self.objects)

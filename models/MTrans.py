@@ -3,7 +3,7 @@ import torchvision
 from torch import nn
 from models.CNN_backbone.FPN import FPN
 from models.modules.modality_mapper import img2pc
-from utils.point_ops import build_image_location_map
+from utils.point_ops import build_image_location_map_single
 from models.modules.point_sa import AttentionPointEncoder
 from loss import cal_diou_3d
 import numpy as np
@@ -59,7 +59,7 @@ class MTrans(nn.Module):
                 nn.Linear(hidden_size+cimg+hidden_size, 512),
                 nn.LayerNorm(512),
                 nn.ReLU(inplace=True),
-                nn.Dropout(p=0.5),
+                nn.Dropout(p=0.4),
                 nn.Linear(512, 3)
             )
         else:
@@ -100,13 +100,10 @@ class MTrans(nn.Module):
         unmaksed_known_points = (impact_points_mask) + (real_point_mask==3) # (B, N), points has 3D coords, no masked, no padding
         nonpadding_points = (unmaksed_known_points) + (real_point_mask==2)  # (B, N), points known, no padding
 
-        if ((foreground_label==1).sum(dim=-1) < 6).any():
-            debug=1
-
         # normalize point cloud
         sub_cloud_center = (sub_cloud * impact_points_mask.unsqueeze(-1)).sum(dim=1) / (impact_points_mask.sum(dim=1, keepdim=True)+1e-6)  # (B, 3)
         # only norm x&y coords
-        sub_cloud_center[:,-1] = 0
+        # sub_cloud_center[:,-1] = 0
         data_dict.locations = data_dict.locations - sub_cloud_center
         sub_cloud = sub_cloud - sub_cloud_center.unsqueeze(1)
         data_dict.sub_clouds[:, :, :3] = data_dict.sub_clouds[:, :, :3] - sub_cloud_center.unsqueeze(1)
@@ -170,7 +167,7 @@ class MTrans(nn.Module):
         key_f2d = img2pc(image_features, key_c2d).transpose(-1, -2)                             # (B, N, Ci)
         key_f3d = self.xyzd_embedding(jittered_cloud) * (unmaksed_known_points.unsqueeze(-1)) + \
                   self.unknown_f3d.view(1, 1, -1).repeat(B, N, 1) * (~unmaksed_known_points.unsqueeze(-1))
-        query_c2d = (build_image_location_map(qH, qW, device)*scale).view(1, -1, 2).repeat(B, 1, 1)     # (B, H*W, 2)
+        query_c2d = (build_image_location_map_single(qH, qW, device)*scale).view(1, -1, 2).repeat(B, 1, 1)     # (B, H*W, 2)
         query_f2d = img2pc(image_features, query_c2d).transpose(-1, -2)                         # (B, H*W, Ci)
         query_f3d = self.unknown_f3d.view(1, 1, -1).repeat(B, query_f2d.size(1), 1)
 
@@ -178,7 +175,7 @@ class MTrans(nn.Module):
         # 3. Self-attention to decode missing 3D features
         # only unmasked known foreground will be attended
         attn_mask = unmaksed_known_points
-        query_f3d, key_f3d, cls_f3d = self.attention_layers(query_c2d, query_f2d, query_f3d, key_c2d, key_f2d, key_f3d, attn_mask, data=data_dict if self.cfgs.visualize_attn else None)
+        query_f3d, key_f3d, cls_f3d = self.attention_layers(query_c2d, query_f2d, query_f3d, key_c2d, key_f2d, key_f3d, attn_mask)
         pred_key_coords_3d = self.xyz_head(key_f3d)                                                # (B, N, 3)
         pred_dict['pred_coords_3d'] = pred_key_coords_3d
         
@@ -196,8 +193,6 @@ class MTrans(nn.Module):
         all_points = torch.cat([sub_cloud], dim=1)
         all_forground_mask = torch.cat([pred_key_foreground], dim=1).argmax(dim=-1, keepdim=True)*unmaksed_known_points.unsqueeze(-1)
         seg_center = (all_points*all_forground_mask).sum(dim=1) / ((all_forground_mask).sum(dim=1)+1e-6)
-        # only norm x&y
-        seg_center[:,-1] = 0
         data_dict.locations = data_dict.locations - seg_center
         pred_dict['second_offset'] = seg_center
 
@@ -341,11 +336,7 @@ class MTrans(nn.Module):
                 a[i] = a[i] - np.pi * 2
             while a[i] <= -np.pi:
                 a[i] = a[i] + np.pi*2
-        try:
-            assert (a<=np.pi).all() and (a>=-np.pi).all()
-        except:
-            import pdb
-            pdb.set_trace()
+        assert (a<=np.pi).all() and (a>=-np.pi).all()
         return a
 
     def adjust_direction(self, yaw, dir):
