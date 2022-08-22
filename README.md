@@ -2,7 +2,7 @@
 The PyTorch implementation of 'Multimodal Transformer for Automatic 3D Annotation and Object Detection', which has been accepted by ECCV2022.
 
 ## Data Preparation
-The KITTI 3D detection dataset can be downloaded from the official webstie: ![link](http://www.cvlibs.net/datasets/kitti/eval_object.php?obj_benchmark=3d).
+The KITTI 3D detection dataset can be downloaded from the official webstie: [link](http://www.cvlibs.net/datasets/kitti/eval_object.php?obj_benchmark=3d).
 
 ## Train
 To train a MTrans with the KITTI dataset. Simply run:
