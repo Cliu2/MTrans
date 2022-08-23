@@ -1,5 +1,10 @@
 # MTrans
-The PyTorch implementation of 'Multimodal Transformer for Automatic 3D Annotation and Object Detection', which has been accepted by ECCV2022.
+The PyTorch implementation of [Multimodal Transformer for Automatic 3D Annotation and Object Detection](https://arxiv.org/abs/2207.09805), which has been accepted by ECCV2022.
+
+## Installation
+The code has been tested on PyTorch v1.9.1. 
+
+IoU loss is required for training. Before running, please install the IoU loss package following this [doc](https://github.com/Cliu2/MTrans/tree/main/loss#readme).
 
 ## Data Preparation
 The KITTI 3D detection dataset can be downloaded from the official webstie: [link](http://www.cvlibs.net/datasets/kitti/eval_object.php?obj_benchmark=3d).
@@ -8,8 +13,9 @@ The KITTI 3D detection dataset can be downloaded from the official webstie: [lin
 To train a MTrans with the KITTI dataset. Simply run:
 > python train.py --cfg_file configs/MTrans_kitti.yaml
 
-## Pretrained Model
-COMING SOON.
+## Trained Model
+Trained checkpoint can be downloaded from [here](https://connecthkuhk-my.sharepoint.com/personal/lcon7_connect_hku_hk/_layouts/15/onedrive.aspx?id=%2Fpersonal%2Flcon7%5Fconnect%5Fhku%5Fhk%2FDocuments%2FMTrans%5Fckpt%2Fbest%5Fmodel%2Ept&parent=%2Fpersonal%2Flcon7%5Fconnect%5Fhku%5Fhk%2FDocuments%2FMTrans%5Fckpt&ga=1).
+Although we try to fix the random seeds, due to the randomness in some asynchronuous CUDA opearations and data preprocessing (e.g., point sampling), the result might not be exactly the same from run to run.
 
 ## References
 The IoU loss module is borrowed from "https://github.com/lilanxiao/Rotated_IoU". We thank the author for providing a neat implementation of the IoU loss.
