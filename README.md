@@ -14,7 +14,7 @@ To train a MTrans with the KITTI dataset. Simply run:
 > python train.py --cfg_file configs/MTrans_kitti.yaml
 
 ## Trained Model
-Trained checkpoint can be downloaded from [here](https://connecthkuhk-my.sharepoint.com/personal/lcon7_connect_hku_hk/_layouts/15/onedrive.aspx?id=%2Fpersonal%2Flcon7%5Fconnect%5Fhku%5Fhk%2FDocuments%2FMTrans%5Fckpt%2Fbest%5Fmodel%2Ept&parent=%2Fpersonal%2Flcon7%5Fconnect%5Fhku%5Fhk%2FDocuments%2FMTrans%5Fckpt&ga=1).
+Trained checkpoint can be downloaded from [here](https://connecthkuhk-my.sharepoint.com/:u:/g/personal/lcon7_connect_hku_hk/EYyRIedDNolHr3GSq0b3CZoBgsyI3XVjjtz4STD97WtKUQ?e=IhhNk4).
 Although we try to fix the random seeds, due to the randomness in some asynchronuous CUDA opearations and data preprocessing (e.g., point sampling), the result might not be exactly the same from run to run.
 
 ## References

@@ -280,9 +280,8 @@ class KittiDetectionDataset(Dataset):
         num_padding = (int(np.floor((out_shape-w)/2)), int(np.ceil((out_shape-w)/2)), int(np.floor((out_shape-h)/2)), int(np.ceil((out_shape-h)/2)))
         img = torch.nn.functional.pad(img, num_padding)     # zero-padding to make it square
         crop_sub_cloud2d = (obj['sub_cloud2d'] - np.array([l, t])) * (out_shape/box_size) + np.array([num_padding[0], num_padding[2]])
-        assert np.logical_and.reduce([crop_sub_cloud2d[:, 0]>0, crop_sub_cloud2d[:,0]<112, crop_sub_cloud2d[:, 1]>0, crop_sub_cloud2d[:,1]<112]).all()            
+        assert np.logical_and.reduce([crop_sub_cloud2d[:, 0]>0, crop_sub_cloud2d[:,0]<out_shape, crop_sub_cloud2d[:, 1]>0, crop_sub_cloud2d[:,1]<out_shape]).all()            
 
-        # img, overlap_mask, pos_mask = img[:, 0:3, :, :], img[:, 3:4, :, :], img[:, 4:6, :, :]
         img, overlap_mask = img[:, 0:3, :, :], img[:, 3:4, :, :]
 
         # sampling the point cloud to fixed size
