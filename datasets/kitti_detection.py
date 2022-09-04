@@ -212,7 +212,7 @@ class KittiDetectionDataset(Dataset):
                 obj['frame'] = frame
                 # query sub cloud within the 2D box
                 left, top, right, bottom = obj['box_2d']
-                idx = np.logical_and.reduce([p2d_float[:, 0]>=left, p2d_float[:, 1]>=top, p2d_float[:, 0]<=right, p2d_float[:, 1]<=bottom])
+                idx = np.logical_and.reduce([p2d_float[:, 0]>left, p2d_float[:, 1]>top, p2d_float[:, 0]<right, p2d_float[:, 1]<bottom])
                 sub_cloud = point_cloud[idx]
                 sub_cloud2d = p2d_float[idx]
                 obj['sub_cloud'] = sub_cloud
