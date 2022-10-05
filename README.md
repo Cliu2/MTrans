@@ -1,5 +1,5 @@
 # MTrans
-The PyTorch implementation of [Multimodal Transformer for Automatic 3D Annotation and Object Detection](https://arxiv.org/abs/2207.09805), which has been accepted by ECCV2022.
+The PyTorch implementation of [Multimodal Transformer for Automatic 3D Annotation and Object Detection](https://arxiv.org/abs/2207.09805), which has been accepted by ECCV2023.
 
 ## Installation
 The code has been tested on PyTorch v1.9.1. 
